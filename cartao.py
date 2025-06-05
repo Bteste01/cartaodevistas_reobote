@@ -1,9 +1,7 @@
 import streamlit as st
 from PIL import Image
-import qrcode
-from io import BytesIO
 from fpdf import FPDF
-import base64
+from io import BytesIO
 
 st.set_page_config(page_title="Cartão de Visita Digital", layout="centered")
 
@@ -19,7 +17,6 @@ with st.form("card_form"):
     whatsapp = st.text_input("WhatsApp (com DDD)")
     email = st.text_input("E-mail")
     instagram = st.text_input("Instagram (sem @)")
-    site_qrcode = st.text_input("Link para o QR Code (site, portfólio, etc.)")
     logotipo = st.file_uploader("Logotipo (PNG ou JPG)", type=["png", "jpg", "jpeg"])
 
     submitted = st.form_submit_button("Gerar Cartão")
@@ -27,12 +24,6 @@ with st.form("card_form"):
 # --- Geração de cartão ---
 if submitted:
     st.subheader("🔎 Visualização do Cartão")
-
-    # Geração do QR Code
-    qr = qrcode.make(site_qrcode)
-    qr_bytes = BytesIO()
-    qr.save(qr_bytes, format="PNG")
-    qr_img = Image.open(qr_bytes)
 
     # Exibir cartão
     with st.container():
@@ -49,7 +40,6 @@ if submitted:
                 </div>
             """, unsafe_allow_html=True)
         with col2:
-            st.image(qr_img, caption="QR Code", width=120)
             if logotipo:
                 st.image(logotipo, caption="Logotipo", width=120)
 
@@ -68,7 +58,6 @@ if submitted:
     pdf.cell(200, 10, txt=f"WhatsApp: {whatsapp}", ln=True)
     pdf.cell(200, 10, txt=f"E-mail: {email}", ln=True)
     pdf.cell(200, 10, txt=f"Instagram: @{instagram}", ln=True)
-    pdf.cell(200, 10, txt=f"QR Code: {site_qrcode}", ln=True)
 
     pdf_bytes = BytesIO()
     pdf.output(pdf_bytes)
